@@ -45,12 +45,12 @@ def scrape_bogazici(keywords: list[str] | None = None) -> list[dict]:
 
         # İlan kartlarını bul
         job_elements = (
-            soup.select(".job-listing")
+            soup.select(".views-row")
+            or soup.select(".job-listing")
             or soup.select(".ilan-card")
             or soup.select(".vacancy-item")
             or soup.select("article")
             or soup.select(".list-group-item")
-            or soup.select("tr")  # Tablo formatında olabilir
         )
 
         if not job_elements:
@@ -61,12 +61,20 @@ def scrape_bogazici(keywords: list[str] | None = None) -> list[dict]:
             for link in links:
                 href = link.get("href", "")
                 text = link.get_text(strip=True)
-                # İlan linklerini filtrele (ilan, job, vacancy içerenler)
-                if any(
-                    x in href.lower()
-                    for x in ["ilan", "job", "vacancy", "position", "kariyer"]
-                ):
+                # Sadece doğrudan iş ilanı olan /tr/is-ve-staj-ilanlari/... gibi sayfaları kabul et
+                if "/is-ve-staj-ilanlari/" in href.lower() and len(href) > 25:
                     if text and len(text) > 5:
+                        text_lower = text.lower()
+                        invalid_keywords = [
+                            "türkçe", "english", "hakkımızda", "iletişim", 
+                            "kariyer seminer", "kariyer sohbet", "kariyer seçimi", 
+                            "kariyer eylem", "akademik kariyer", "kariyer danışman",
+                            "kariyer kapısı", "katılım başvuru", "sonraki", 
+                            "@bogazici.edu.tr", "iş ve staj duyuruları"
+                        ]
+                        if any(kw in text_lower for kw in invalid_keywords):
+                            continue
+                        
                         url = href if href.startswith("http") else f"{ROOT_URL}{href}"
                         job = {
                             "id": str(uuid.uuid4()),
@@ -91,6 +99,17 @@ def scrape_bogazici(keywords: list[str] | None = None) -> list[dict]:
                     title = title_el.get_text(strip=True)
 
                     if not title or len(title) < 3:
+                        continue
+
+                    title_lower = title.lower()
+                    invalid_keywords = [
+                        "türkçe", "english", "hakkımızda", "iletişim", 
+                        "kariyer seminer", "kariyer sohbet", "kariyer seçimi", 
+                        "kariyer eylem", "akademik kariyer", "kariyer danışman",
+                        "kariyer kapısı", "katılım başvuru", "sonraki", 
+                        "@bogazici.edu.tr", "iş ve staj duyuruları"
+                    ]
+                    if any(kw in title_lower for kw in invalid_keywords):
                         continue
 
                     link_el = (

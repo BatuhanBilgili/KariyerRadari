@@ -48,7 +48,8 @@ def scrape_itu(keywords: list[str] | None = None) -> list[dict]:
         # İlan kartlarını bul — yaygın CSS selektörler denenir
         # Not: Site yapısı değişebilir, bu selektörler güncellenebilir
         job_elements = (
-            soup.select(".job-listing")
+            soup.select(".job-block-four")
+            or soup.select(".job-listing")
             or soup.select(".ilan-card")
             or soup.select(".job-item")
             or soup.select("article")
@@ -56,11 +57,12 @@ def scrape_itu(keywords: list[str] | None = None) -> list[dict]:
         )
 
         if not job_elements:
-            # Fallback: tüm linkleri tara
+            # Fallback: Sadece '/ilan/' içeren linkleri tara (menü linklerini almamak için)
             logger.warning(
                 "İTÜ: Spesifik ilan kartları bulunamadı, link tabanlı arama yapılıyor..."
             )
-            job_elements = soup.find_all("a", href=True)
+            all_links = soup.find_all("a", href=True)
+            job_elements = [link for link in all_links if "/ilan/" in link.get("href", "").lower()]
 
         for element in job_elements:
             try:
@@ -72,6 +74,15 @@ def scrape_itu(keywords: list[str] | None = None) -> list[dict]:
                 title = title_el.get_text(strip=True)
 
                 if not title or len(title) < 3:
+                    continue
+
+                title_lower = title.lower()
+                invalid_keywords = [
+                    "anasayfa", "hakkımızda", "iletişim", "sıkça sorulan",
+                    "giriş yap", "kayıt ol", "kaydol", "başvur", "çerez",
+                    "iş bul", "ariteknokent", "kariyer@", "+90"
+                ]
+                if any(kw in title_lower for kw in invalid_keywords):
                     continue
 
                 # Link çıkarma
