@@ -28,7 +28,7 @@ KariyerRadarı tek bir merkezden yayınlanır, kurulum (frontend) ile uğraşmaz
    - `SUPABASE_URL`: Supabase projenizin URL adresi.
    - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service_role key'i (ASLA ARAYÜZE GİRMEYİN).
    - `TELEGRAM_BOT_TOKEN`: Bildirim gönderecek botun token'ı (BotFather).
-   - `GEMINI_API_KEY`: İlanların AI özelliklerini özetlemesi için Gemini API anahtarı.
+   - `GEMINI_API_KEY`: İlanların AI özelliklerini özetlemesi için Gemini API anahtarı (Opsiyonel).
 4. Repo ana sayfasındaki **Actions** sekmesine tıklayıp "Enable workflows" diyerek otomatik görevleri aktif hale getirin.
 
 *Dashboard Ayar Görünümü:*

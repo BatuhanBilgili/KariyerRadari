@@ -262,9 +262,13 @@ def process_user(client, user: dict):
     ]
 
     if all_new_jobs:
-        # AI özetleri oluştur
-        logger.info(f"  🤖 {len(all_new_jobs)} ilan için AI özeti oluşturuluyor...")
-        all_new_jobs = batch_summarize_jobs(all_new_jobs)
+        # AI özetleri oluştur (Opsiyonel)
+        gemini_api_key = user.get("gemini_api_key")
+        if gemini_api_key or os.environ.get("GEMINI_API_KEY"):
+            logger.info(f"  🤖 {len(all_new_jobs)} ilan için AI özeti oluşturuluyor...")
+            all_new_jobs = batch_summarize_jobs(all_new_jobs, api_key=gemini_api_key)
+        else:
+            logger.info(f"  🤖 Gemini API Key bulunamadı, AI özeti adımı atlanıyor.")
 
         # Özetleri platform dict'ine geri yaz
         idx = 0

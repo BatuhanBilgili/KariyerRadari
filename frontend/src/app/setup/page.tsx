@@ -175,7 +175,7 @@ export default function SetupPage() {
 
             {/* Adım 4: Gemini */}
             <div className="setup-step">
-              <h3 className="setup-step-title">Adım 4: Gemini API Key (AI Özellikleri)</h3>
+              <h3 className="setup-step-title">Adım 4: Gemini API Key (AI Özellikleri - Opsiyonel)</h3>
               <div className="setup-step-content">
                 <ol>
                   <li><a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer">Google AI Studio</a> adresine gidin.</li>

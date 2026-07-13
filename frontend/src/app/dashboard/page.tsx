@@ -542,7 +542,7 @@ export default function DashboardPage() {
                     Profil Bilgileri (AI CV için)
                   </h3>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="gemini-key-input">Gemini API Key</label>
+                    <label className="form-label" htmlFor="gemini-key-input">Gemini API Key (Opsiyonel)</label>
                     <input
                       id="gemini-key-input"
                       type="password"
