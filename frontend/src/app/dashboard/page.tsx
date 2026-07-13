@@ -229,7 +229,7 @@ export default function DashboardPage() {
         localStorage.setItem("tr_user_id", userId);
       }
 
-      await supabase.from("users").upsert({
+      const { error } = await supabase.from("users").upsert({
         id: userId,
         email: email || null,
         telegram_chat_id: telegramChatId || null,
@@ -245,8 +245,14 @@ export default function DashboardPage() {
         gemini_api_key: geminiApiKey || null,
         old_cv_text: oldCvText || null
       });
-    } catch (e) {
+
+      if (error) {
+        console.error("Supabase kaydetme hatası:", error);
+        alert("Veritabanına kaydedilirken bir hata oluştu: " + error.message + "\n\n(Lütfen Supabase'den RLS ayarlarını kapattığınızdan emin olun)");
+      }
+    } catch (e: any) {
       console.error("Supabase sync hatası:", e);
+      alert("Bağlantı hatası: " + e.message);
     }
   };
 
