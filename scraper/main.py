@@ -118,6 +118,7 @@ def process_user(client, user: dict):
     user_locations = user.get("locations", [])
     fetch_all_univ = user.get("fetch_all_univ", False)
     user_experience_levels = user.get("experience_levels", [])
+    remote_global = user.get("remote_global", False)
     user_work_types = user.get("work_types", ["remote", "hybrid", "onsite"])
     notif_method = user.get("notification_method", "telegram")
     telegram_id = user.get("telegram_chat_id")
@@ -128,6 +129,7 @@ def process_user(client, user: dict):
     logger.info(f"  Locations: {user_locations}")
     logger.info(f"  Platforms: {user_platforms}")
     logger.info(f"  Experience Levels: {user_experience_levels}")
+    logger.info(f"  Remote Global: {remote_global}")
     logger.info(f"  Work Types: {user_work_types}")
     logger.info(f"  Fetch All Univ: {fetch_all_univ}")
     logger.info(f"  Notification: {notif_method}")
@@ -194,7 +196,8 @@ def process_user(client, user: dict):
                         if u_loc_lower == "turkey" and "türkiye" in job_loc:
                             match = True
                             break
-                        if u_loc_lower == "remote" and j.get("work_type") == "remote":
+                        # Eğer kullanıcı remote_global seçmişse ve işin tipi remote ise konumdan bağımsız kabul et
+                        if remote_global and j.get("work_type") == "remote":
                             match = True
                             break
                     if match:

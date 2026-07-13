@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
     locations TEXT[] NOT NULL DEFAULT '{}',
     fetch_all_univ BOOLEAN NOT NULL DEFAULT false,
     experience_levels TEXT[] NOT NULL DEFAULT '{}',
+    remote_global BOOLEAN NOT NULL DEFAULT false,
     work_types TEXT[] NOT NULL DEFAULT '{remote, hybrid, onsite}',
     platforms TEXT[] NOT NULL DEFAULT '{linkedin}',
     -- Kullanıcı profil bilgileri (AI CV Builder için)

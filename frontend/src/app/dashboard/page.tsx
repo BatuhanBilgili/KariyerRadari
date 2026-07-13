@@ -81,6 +81,7 @@ export default function DashboardPage() {
   const [locationInput, setLocationInput] = useState("");
   const [fetchAllUniv, setFetchAllUniv] = useState(false);
   const [experienceLevels, setExperienceLevels] = useState<string[]>([]);
+  const [remoteGlobal, setRemoteGlobal] = useState(false);
   const [workTypes, setWorkTypes] = useState<WorkType[]>(["remote", "hybrid", "onsite"]);
   const [platforms, setPlatforms] = useState<Platform[]>(["linkedin"]);
   const [githubUrl, setGithubUrl] = useState("");
@@ -119,6 +120,8 @@ export default function DashboardPage() {
 
       const savedExpLevels = localStorage.getItem("tr_experience_levels");
       if (savedExpLevels) setExperienceLevels(JSON.parse(savedExpLevels));
+
+      setRemoteGlobal(localStorage.getItem("tr_remote_global") === "true");
 
       setGithubUrl(localStorage.getItem("tr_github_url") || "");
       setKaggleUrl(localStorage.getItem("tr_kaggle_url") || "");
@@ -297,6 +300,7 @@ export default function DashboardPage() {
         locations: locations,
         fetch_all_univ: fetchAllUniv,
         experience_levels: experienceLevels,
+        remote_global: remoteGlobal,
         work_types: workTypes,
         platforms: platforms,
         github_url: githubUrl || null,
@@ -328,6 +332,7 @@ export default function DashboardPage() {
       localStorage.setItem("tr_locations", JSON.stringify(locations));
       localStorage.setItem("tr_fetch_all_univ", String(fetchAllUniv));
       localStorage.setItem("tr_experience_levels", JSON.stringify(experienceLevels));
+      localStorage.setItem("tr_remote_global", String(remoteGlobal));
       localStorage.setItem("tr_work_types", JSON.stringify(workTypes));
       localStorage.setItem("tr_platforms", JSON.stringify(platforms));
       localStorage.setItem("tr_github_url", githubUrl);
@@ -682,6 +687,23 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Yurtdışı Remote Seçeneği */}
+                  {workTypes.includes("remote") && (
+                    <div className="form-group" style={{ marginTop: "-0.5rem", marginBottom: "1rem" }}>
+                      <label style={{ display: "flex", gap: "10px", alignItems: "center", cursor: "pointer" }}>
+                        <input
+                          type="checkbox"
+                          checked={remoteGlobal}
+                          onChange={(e) => setRemoteGlobal(e.target.checked)}
+                          style={{ width: "16px", height: "16px", cursor: "pointer", accentColor: "var(--accent-primary)" }}
+                        />
+                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                          Uzaktan (Remote) ilanlarda konum filtresini devre dışı bırak (Yurtdışı/Global dahil)
+                        </span>
+                      </label>
+                    </div>
+                  )}
 
                   {/* Şehir / Ülke Seçimi */}
                   <div className="form-group">
