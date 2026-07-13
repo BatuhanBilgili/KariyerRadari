@@ -222,15 +222,24 @@ def process_user(client, user: dict):
                         strict_filtered.append(j)
                 jobs = strict_filtered
 
+            # Veritabanında zaten var olan ilanların ID'lerini jobs listesine eşle
+            # Böylece DB'deki gerçek ID'ler üzerinden filtreleme yapabiliriz
+            external_ids = [j["external_id"] for j in jobs if "external_id" in j]
+            if external_ids:
+                # PostgREST in_ filter has a limit, but typically jobs per platform < 100
+                existing_res = client.table("job_listings").select("id, external_id").eq("platform", platform).in_("external_id", external_ids).execute()
+                existing_map = {row["external_id"]: row["id"] for row in (existing_res.data or [])}
+
+                for job in jobs:
+                    if job["external_id"] in existing_map:
+                        job["id"] = existing_map[job["external_id"]]
+
             # İlanları DB'ye kaydet
             for job in jobs:
                 upsert_job_listing(client, job)
 
             # Daha önce gönderilmemiş ilanları filtrele
             new_jobs = [j for j in jobs if j.get("id") not in sent_job_ids]
-
-            # External ID bazında da kontrol et
-            new_jobs = _filter_by_external_id(new_jobs, sent_job_ids, client, user_id)
 
             if new_jobs:
                 logger.info(
@@ -290,16 +299,7 @@ def process_user(client, user: dict):
                 record_sent_notification(client, user_id, job["id"], "email")
 
 
-def _filter_by_external_id(
-    jobs: list[dict], sent_job_ids: set, client, user_id: str
-) -> list[dict]:
-    """
-    DB'deki sent_notifications ile cross-check yaparak
-    aynı external_id'ye sahip ilanları filtreler.
-    """
-    # Şimdilik basit ID filtresi kullanıyoruz
-    # İleride external_id bazında daha sofistike kontrol eklenebilir
-    return jobs
+
 
 
 def _send_notifications(
